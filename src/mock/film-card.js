@@ -1,8 +1,11 @@
+import {createCommentsList} from './comments.js';
+import {getRandomInteger, getRandomUniqueItem} from '../utils.js';
+
 const DATE_FIRST_MOVIE_RELEASE = 1888;
 const MAX_RATING_FILM = 10;
 const MAX_DURATION_IN_MINUTES = 210;
 const HOUR_IN_MINUTES = 60;
-const MAX_COMMENTS = 500;
+const MAX_COMMENTS = 10;
 
 const filmTitles = [
   `The Shawshank Redemption`,
@@ -43,13 +46,14 @@ const filmGenres = [
   `Cartoon`,
   `Mystery`];
 
-const getRandomInteger = (min, max) => Math.floor(min + Math.random() * (max + 1 - min));
-const getRandomUniqueItem = (arr) => {
-  const getIndex = getRandomInteger(0, arr.length - 1);
-  const item = arr[getIndex];
-  arr.splice(getIndex, 1);
-  return item;
-};
+const ageRatings = [
+  `0+`,
+  `6+`,
+  `12+`,
+  `16+`,
+  `18+`
+];
+
 const getRandomRaiting = () => (Math.random() * MAX_RATING_FILM).toFixed(1);
 const getCurrentYear = () => {
   const currentDate = new Date();
@@ -77,7 +81,8 @@ const generateFilm = () => {
     genre: filmGenres[getRandomInteger(0, filmGenres.length - 1)],
     poster: filmPosters[getRandomInteger(0, filmPosters.length - 1)],
     description: combineDescription(filmTexts.slice(getRandomInteger(0, filmTexts.length - 1))),
-    comments: getRandomInteger(0, MAX_COMMENTS),
+    comments: createCommentsList(getRandomInteger(0, MAX_COMMENTS)),
+    ageRating: ageRatings[getRandomInteger(0, ageRatings.length - 1)],
     watchlist: getRandomBoolean(),
     watched: getRandomBoolean(),
     favorite: getRandomBoolean()
