@@ -1,6 +1,8 @@
+import {createElement} from '../utils.js';
+
 const filteredFilms = (films, prop) => films.filter((film) => film[prop]);
 
-export const createMenuTemplate = (films) => {
+const createMenuTemplate = (films) => {
   const inWatchlist = filteredFilms(films, `watchlist`).length;
   const inHistorylist = filteredFilms(films, `watched`).length;
   const inFavoriteslist = filteredFilms(films, `favorite`).length;
@@ -11,7 +13,6 @@ export const createMenuTemplate = (films) => {
       <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">${inFavoriteslist}</span></a>
       <a href="#stats" class="main-navigation__item main-navigation__item--additional">Stats</a>
     </nav>
-
     <ul class="sort">
       <li><a href="#" class="sort__button sort__button--active">Sort by default</a></li>
       <li><a href="#" class="sort__button">Sort by date</a></li>
@@ -19,3 +20,25 @@ export const createMenuTemplate = (films) => {
     </ul>`);
 };
 
+export default class Menu {
+  constructor(films) {
+    this._films = films;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createMenuTemplate(this._films);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
