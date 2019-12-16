@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const MAX_DESCRIPTION_SYMBOLS = 139;
 
@@ -25,25 +25,25 @@ const createMovieCardTemplate = (film) => {
     </article>`);
 };
 
-export default class FilmCard {
+export default class FilmCard extends AbstractComponent {
   constructor(film) {
+    super();
     this._film = film;
-    this._element = null;
   }
 
   getTemplate() {
     return createMovieCardTemplate(this._film);
   }
 
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
+  setPosterClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__poster`).addEventListener(`click`, handler);
   }
 
-  removeElement() {
-    this._element = null;
+  setTitleClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__title`).addEventListener(`click`, handler);
+  }
+
+  setCommentsClickHandler(handler) {
+    this.getElement().querySelector(`.film-card__comments`).addEventListener(`click`, handler);
   }
 }

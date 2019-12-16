@@ -1,4 +1,4 @@
-import {createElement} from '../utils.js';
+import AbstractComponent from './abstract-component.js';
 
 const countWatchedFilms = (films) => films.filter((film) => film.watched);
 
@@ -23,25 +23,13 @@ const createAvatarTemplate = (films) => {
     </section>`);
 };
 
-export default class Avatar {
+export default class Avatar extends AbstractComponent {
   constructor(films) {
+    super();
     this._films = films;
-    this._element = null;
   }
 
   getTemplate() {
     return createAvatarTemplate(this._films);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
