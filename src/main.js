@@ -10,9 +10,9 @@ const ALL_FILMS_COUNT = 10;
 
 const films = generateFilms(ALL_FILMS_COUNT);
 
-const headerElement = document.querySelector(`.header`)
-
+const headerElement = document.querySelector(`.header`);
 const mainMenuElement = document.querySelector(`.main`);
+
 render(mainMenuElement, new MenuComponent(films), RenderPosition.BEFOREEND);
 render(mainMenuElement, new SortComponent(), RenderPosition.BEFOREEND);
 render(headerElement, new AvatarComponent(films), RenderPosition.BEFOREEND);

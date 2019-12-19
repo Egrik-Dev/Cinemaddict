@@ -1,4 +1,4 @@
-import AbstractComponent from './abstract-component.js';
+import AbstractSmartComponent from './abstract-smart-component.js';
 
 const MS_ONE_DAY = 86400000;
 
@@ -15,7 +15,7 @@ const getCommentDate = (date) => {
   }
 };
 
-const getCommentTemplate = (comments) => {
+const createCommentTemplate = (comments) => {
   comments.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
   return comments.map((comment) => {
     return (`<li class="film-details__comment">
@@ -118,7 +118,7 @@ const createFilmPopupTemplate = (film) => {
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
           <ul class="film-details__comments-list">
-            ${getCommentTemplate(comments)}
+            ${createCommentTemplate(comments)}
           </ul>
 
           <div class="film-details__new-comment">
@@ -156,7 +156,7 @@ const createFilmPopupTemplate = (film) => {
   </section>`);
 };
 
-export default class PopUp extends AbstractComponent {
+export default class PopUp extends AbstractSmartComponent {
   constructor(film) {
     super();
     this._film = film;
@@ -168,6 +168,22 @@ export default class PopUp extends AbstractComponent {
 
   setBtnCloseClickHandler(handler) {
     this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, handler);
+  }
+
+  setWatchlistClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__control-label--watchlist`).addEventListener(`click`, handler);
+  }
+
+  setAswatchedClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__control-label--watched`).addEventListener(`click`, handler);
+  }
+
+  setFavoriteClickHandler(handler) {
+    this.getElement().querySelector(`.film-details__control-label--favorite`).addEventListener(`click`, handler);
+  }
+
+  recoveryListeners() {
+
   }
 }
 
