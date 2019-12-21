@@ -1,21 +1,19 @@
-// import FilmComponent from '../components/film-card.js';
-// import PopUpComponent from '../components/popup.js';
 import FilmListComponent from '../components/film-list.js';
 import ShowMoreComponent from '../components/show-more.js';
 import FilmListExtra from '../components/film-list-extra.js';
 import MovieControllerComponent from './movie-controller.js';
-// import {isEscEvent} from '../utils.js';
 import {render, remove, RenderPosition} from '../utils/render.js';
 
 const START_RENDER_FILMS_COUNT = 5;
 const LOAD_MORE_RENDER_FILMS_COUNT = 5;
 const RENDER_EXTRA_FILMS_COUNT = 2;
 
-const renderFilm = (film, container, onDataChange) => {
-  const movieControllerComponent = new MovieControllerComponent(container, onDataChange);
-  movieControllerComponent.render(film);
-
-  // return movieControllerComponent;
+const renderFilms = (container, films, onDataChange, onViewChange) => {
+  return films.map((film) => {
+    const movieControllerComponent = new MovieControllerComponent(container, onDataChange, onViewChange);
+    movieControllerComponent.render(film);
+    return movieControllerComponent;
+  });
 };
 
 export default class PageController {
@@ -27,7 +25,11 @@ export default class PageController {
     this._showMoreComponent = new ShowMoreComponent();
     this._filmListTopRated = new FilmListExtra(`Top rated`);
     this._filmListMostCommented = new FilmListExtra(`Most commented`);
+
     this._onDataChange = this._onDataChange.bind(this);
+    this._onViewChange = this._onViewChange.bind(this);
+
+    this._showedMovieControllers = [];
   }
 
   render(films) {
@@ -40,22 +42,26 @@ export default class PageController {
     const allMoviesListElement = this._filmListComponent.getElement().querySelector(`.films-list__container`);
 
     let showingFilmsCount = START_RENDER_FILMS_COUNT;
-    this._films.slice(0, showingFilmsCount).forEach((film) => renderFilm(film, allMoviesListElement, this._onDataChange));
+    let showedFilms = renderFilms(allMoviesListElement, this._films.slice(0, showingFilmsCount), this._onDataChange, this._onViewChange);
+    this._showedMovieControllers = this._showedMovieControllers.concat(showedFilms);
 
     const topRatedListFilms = this._films.slice().sort((a, b) => b.rating - a.rating).slice(0, RENDER_EXTRA_FILMS_COUNT);
     const topRatedListElement = this._filmListTopRated.getElement().querySelector(`.films-list__container`);
-    topRatedListFilms.slice(0, RENDER_EXTRA_FILMS_COUNT).forEach((film) => renderFilm(film, topRatedListElement, this._onDataChange));
+    showedFilms = renderFilms(topRatedListElement, topRatedListFilms.slice(0, RENDER_EXTRA_FILMS_COUNT), this._onDataChange, this._onViewChange);
+    this._showedMovieControllers = this._showedMovieControllers.concat(showedFilms);
 
     const mostCommentedListFilms = this._films.slice().sort((a, b) => b.comments.length - a.comments.length).slice(0, RENDER_EXTRA_FILMS_COUNT);
     const mostCommentedListElement = this._filmListMostCommented.getElement().querySelector(`.films-list__container`);
-    mostCommentedListFilms.slice(0, RENDER_EXTRA_FILMS_COUNT).forEach((film) => renderFilm(film, mostCommentedListElement, this._onDataChange));
+    showedFilms = renderFilms(mostCommentedListElement, mostCommentedListFilms.slice(0, RENDER_EXTRA_FILMS_COUNT), this._onDataChange, this._onViewChange);
+    this._showedMovieControllers = this._showedMovieControllers.concat(showedFilms);
 
     render(allMoviesListElement, this._showMoreComponent, RenderPosition.AFTEREND);
 
     this._showMoreComponent.setShowMoreClickHandler(() => {
       const prevShowingFilmsCount = showingFilmsCount;
       showingFilmsCount = prevShowingFilmsCount + LOAD_MORE_RENDER_FILMS_COUNT;
-      this._films.slice(prevShowingFilmsCount, showingFilmsCount).forEach((film) => renderFilm(film, allMoviesListElement, this._onDataChange));
+      showedFilms = renderFilms(allMoviesListElement, this._films.slice(prevShowingFilmsCount, showingFilmsCount), this._onDataChange, this._onViewChange);
+      this._showedMovieControllers = this._showedMovieControllers.concat(showedFilms);
 
       if (showingFilmsCount >= films.length) {
         remove(this._showMoreComponent);
@@ -69,5 +75,9 @@ export default class PageController {
     this._films = [].concat(this._films.slice(0, index), newData, this._films.slice(index + 1));
 
     movieController.render(this._films[index]);
+  }
+
+  _onViewChange() {
+    this._showedMovieControllers.forEach((it) => it.setDefaultView());
   }
 }

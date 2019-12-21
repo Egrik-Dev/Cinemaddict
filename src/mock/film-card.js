@@ -82,6 +82,7 @@ const generateFilm = () => {
     poster: filmPosters[getRandomInteger(0, filmPosters.length - 1)],
     description: combineDescription(filmTexts.slice(getRandomInteger(0, filmTexts.length - 1))),
     comments: createCommentsList(getRandomInteger(0, MAX_COMMENTS)),
+    emoji: null,
     ageRating: ageRatings[getRandomInteger(0, ageRatings.length - 1)],
     watchlist: getRandomBoolean(),
     watched: getRandomBoolean(),
