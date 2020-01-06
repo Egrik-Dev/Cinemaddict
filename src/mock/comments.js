@@ -1,4 +1,5 @@
 import {getRandomInteger} from '../utils.js';
+import {createSecondSign} from '../utils/const';
 
 const author = [`Bernard`, `Leonardo`, `Mrs. Stinky`, `The best man`, `Jhony Sambrero`];
 
@@ -25,24 +26,19 @@ const textComments = {
   ]
 };
 
-const createSecondSign = (unit) => {
-  let num = String(unit).split(``);
-  num.unshift(`0`);
-  return num
-    .slice(-2)
-    .join(``);
-};
-
 const getRanomDate = () => {
   let date = new Date();
   date.setDate(date.getDate() + (-1 * getRandomInteger(0, 10)));
   return `${date.getFullYear()}-${date.getMonth() + 1}-${createSecondSign(date.getDate())}T${createSecondSign(date.getHours())}:${createSecondSign(date.getMinutes())}:${createSecondSign(date.getSeconds())}.${date.getMilliseconds()}Z`;
 };
 
+let coundId = 0;
+
 const generateComment = () => {
   const randomEmotion = emoji[getRandomInteger(0, emoji.length - 1)];
 
   const comment = {
+    id: coundId++,
     author: author[getRandomInteger(0, author.length - 1)],
     emotion: randomEmotion,
     comment: textComments[randomEmotion][getRandomInteger(0, textComments[randomEmotion].length - 1)],

@@ -70,10 +70,13 @@ const combineDescription = (arr) => {
   return arr.reduce((sum, current) => sum + current);
 };
 
+let coundId = 0;
+
 const getRandomBoolean = () => Math.random() > 0.5 ? true : false;
 
 const generateFilm = () => {
   const film = {
+    id: coundId++,
     title: getRandomUniqueItem(filmTitles),
     rating: getRandomRaiting(),
     year: getRandomInteger(DATE_FIRST_MOVIE_RELEASE, getCurrentYear()),
