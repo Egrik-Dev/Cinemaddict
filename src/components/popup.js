@@ -18,7 +18,7 @@ const getCommentDate = (date) => {
 const createCommentTemplate = (comments) => {
   comments.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
   return comments.map((comment) => {
-    return (`<li class="film-details__comment">
+    return (`<li class="film-details__comment" id="${comment.id}">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
         </span>
@@ -93,8 +93,8 @@ const createSmileTemplate = (emotion) => {
 };
 
 const createFilmPopupTemplate = (film, options) => {
-  const {title, rating, year, duration, genre, poster, description, comments, ageRating, watchlist, favorite} = film;
-  const {watched, emoji} = options;
+  const {title, rating, year, duration, genre, poster, description, comments, ageRating} = film;
+  const {watchlist, watched, favorite, emoji} = options;
   return (`<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="form-details__top-container">
@@ -214,21 +214,37 @@ const createFilmPopupTemplate = (film, options) => {
   </section>`);
 };
 
+const parseFormData = (formData) => {
+  return {
+    watched: Boolean(formData.get(`watched`)),
+    watchlist: Boolean(formData.get(`watchlist`)),
+    favorite: Boolean(formData.get(`favorite`))
+  };
+};
+
 export default class PopUp extends AbstractSmartComponent {
   constructor(film) {
     super();
     this._film = film;
 
     this._isWatched = film.watched;
+    this._isWatchlist = film.watchlist;
+    this._isFavorite = film.favorite;
+
     this._emoji = null;
+    this._currentComment = null;
 
     this._btnCloseClickHandler = null;
+    this._setDeleteCommentClickHandler = null;
+
     this._subscribeOnEvents();
   }
 
   getTemplate() {
     return createFilmPopupTemplate(this._film, {
+      watchlist: this._isWatchlist,
       watched: this._isWatched,
+      favorite: this._isFavorite,
       emoji: this._emoji,
     });
   }
@@ -239,13 +255,30 @@ export default class PopUp extends AbstractSmartComponent {
     this._btnCloseClickHandler = handler;
   }
 
+  setDeleteCommentClickHandler(handler) {
+    const commentsDelete = this.getElement().querySelectorAll(`.film-details__comment-delete`);
+    commentsDelete.forEach((btnDelete) => {
+      btnDelete.addEventListener(`click`, handler);
+    });
+
+    this._setDeleteCommentClickHandler = handler;
+  }
+
   recoveryListeners() {
     this.setBtnCloseClickHandler(this._btnCloseClickHandler);
+    this.setDeleteCommentClickHandler(this._setDeleteCommentClickHandler);
     this._subscribeOnEvents();
   }
 
   rerender() {
     super.rerender();
+  }
+
+  getData() {
+    const form = this.getElement().querySelector(`.film-details__inner`);
+    const formData = new FormData(form);
+
+    return parseFormData(formData);
   }
 
   _subscribeOnEvents() {
@@ -258,6 +291,16 @@ export default class PopUp extends AbstractSmartComponent {
         this.rerender();
       });
 
+    element.querySelector(`.film-details__control-label--watchlist`)
+      .addEventListener(`click`, () => {
+        this._isWatchlist = !this._isWatchlist;
+      });
+
+    element.querySelector(`.film-details__control-label--favorite`)
+      .addEventListener(`click`, () => {
+        this._isFavorite = !this._isFavorite;
+      });
+
     const emojis = element.querySelectorAll(`.film-details__emoji-item`);
     emojis.forEach((emoji) => {
       emoji.addEventListener(`click`, (evt) => {
@@ -265,6 +308,11 @@ export default class PopUp extends AbstractSmartComponent {
 
         this.rerender();
       });
+    });
+
+    const input = element.querySelector(`.film-details__comment-input`);
+    input.addEventListener(`input`, (evt) => {
+      this._currentComment = evt.target.value;
     });
   }
 }
