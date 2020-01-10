@@ -1,6 +1,6 @@
 import AbstractComponent from './abstract-component.js';
 
-const countWatchedFilms = (films) => films.filter((film) => film.watched);
+const countWatchedFilms = (films) => films.filter((film) => film.alreadyWatched);
 
 const userRank = (filmsCount) => {
   if (filmsCount === 0) {
