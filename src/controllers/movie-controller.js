@@ -1,11 +1,40 @@
 import FilmComponent from '../components/film-card.js';
 import PopUpComponent from '../components/popup.js';
+import MovieModel from '../models/movie';
 import {render, remove, RenderPosition, replace} from '../utils/render.js';
 import {generateDateNow} from '../utils/const';
 
 const Mode = {
   DEFAULT: `default`,
   POPUP: `popup`,
+};
+
+const parseFormData = (formData, film) => {
+  return new MovieModel({
+    'id': film.id,
+    'film_info': {
+      'title': film.title,
+      'alternative_title': film.alternativeTitle,
+      'total_rating': film.totalRating,
+      'poster': film.poster,
+      'age_rating': film.ageRating,
+      'director': film.director,
+      'writers': film.writers,
+      'actors': film.actors,
+      'release': film.release,
+      'runtime': film.runtime,
+      'genre': film.genre,
+      'description': film.description,
+    },
+    'user_details': {
+      'personal_rating': film.personalRating,
+      'watchlist': Boolean(formData.get(`watchlist`)),
+      'already_watched': Boolean(formData.get(`watched`)),
+      'watching_date': film.watchingDate,
+      'favorite': Boolean(formData.get(`favorite`)),
+    },
+    'comments': []
+  });
 };
 
 export default class MovieController {
@@ -17,15 +46,16 @@ export default class MovieController {
     this._mode = Mode.DEFAULT;
 
     this._filmComponent = null;
-    this._idComment = null;
-    this._film = null;
+    this.idComment = null;
+    this.film = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onCtrlEnterKeyDown = this._onCtrlEnterKeyDown.bind(this);
   }
 
   render(film) {
-    this._film = film;
+    this.film = film;
+
     const oldFilmComponent = this._filmComponent;
 
     if (this._mode === Mode.DEFAULT) {
@@ -33,7 +63,7 @@ export default class MovieController {
 
       this._popupComponent.setDeleteCommentClickHandler((evt) => {
         evt.preventDefault();
-        this._idComment = evt.target.parentNode.parentNode.parentNode.id;
+        this.idComment = evt.target.parentNode.parentNode.parentNode.id;
         this._onDataChange(this, film, null);
         this._popupComponent.rerender();
       });
@@ -67,21 +97,24 @@ export default class MovieController {
     });
 
     this._filmComponent.setWatchlistClickHandler(() => {
-      this._onDataChange(this, film, Object.assign({}, film, {
-        watchlist: !film.watchlist,
-      }));
+      const newMovie = MovieModel.clone(film);
+      newMovie.watchlist = !newMovie.watchlist;
+      // newMovie.comments = Array.from(newMovie.comments).map((comment) => String(comment.id));
+      this._onDataChange(this, film, newMovie);
     });
 
     this._filmComponent.setAswatchedClickHandler(() => {
-      this._onDataChange(this, film, Object.assign({}, film, {
-        watched: !film.watched,
-      }));
+      const newMovie = MovieModel.clone(film);
+      newMovie.alreadyWatched = !newMovie.alreadyWatched;
+      // newMovie.comments = Array.from(newMovie.comments).map((comment) => String(comment.id));
+      this._onDataChange(this, film, newMovie);
     });
 
     this._filmComponent.setFavoriteClickHandler(() => {
-      this._onDataChange(this, film, Object.assign({}, film, {
-        favorite: !film.favorite,
-      }));
+      const newMovie = MovieModel.clone(film);
+      newMovie.favorite = !newMovie.favorite;
+      // newMovie.comments = Array.from(newMovie.comments).map((comment) => String(comment.id));
+      this._onDataChange(this, film, newMovie);
     });
 
     if (oldFilmComponent) {
@@ -118,8 +151,10 @@ export default class MovieController {
   }
 
   _updateFilmCard() {
-    const data = this._popupComponent.getData();
-    this._onDataChange(this, this._film, Object.assign({}, this._film, data));
+    const formData = this._popupComponent.getData();
+    const data = parseFormData(formData, this.film);
+
+    this._onDataChange(this, this.film, data);
     this.setDefaultView();
   }
 

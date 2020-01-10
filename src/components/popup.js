@@ -1,4 +1,5 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
+import {Months, createSecondSign, getDuration} from '../utils/const';
 
 const MS_ONE_DAY = 86400000;
 
@@ -15,10 +16,21 @@ const getCommentDate = (date) => {
   }
 };
 
+export const parseDate = (date) => {
+  const newDate = new Date(Date.parse(date));
+
+  const year = newDate.getFullYear();
+  const month = Months[newDate.getMonth()];
+  const day = createSecondSign(newDate.getDate());
+  return (`${day} ${month} ${year}`);
+};
+
+
 const createCommentTemplate = (comments) => {
   comments.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
   return comments.map((comment) => {
-    return (`<li class="film-details__comment" id="${comment.id}">
+    return (
+      `<li class="film-details__comment" id="${comment.id}">
         <span class="film-details__comment-emoji">
           <img src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
         </span>
@@ -36,7 +48,19 @@ const createCommentTemplate = (comments) => {
 .join(`\n`);
 };
 
-const createRatingFilmTemplate = () => {
+const createRatingFields = (personalRating) => {
+  const MAX_RATING = 9;
+
+  const ratings = new Array(MAX_RATING).fill(``);
+  return ratings.map((rating, index) => {
+    return (`<input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${index + 1}" id="rating-${index + 1}" ${(personalRating === index + 1) ? `checked` : ``}>
+    <label class="film-details__user-rating-label" for="rating-${index + 1}">${index + 1}</label>
+    `);
+  })
+.join(`\n`);
+};
+
+const createRatingFilmTemplate = (personalRating) => {
   return (`<div class="form-details__middle-container">
       <section class="film-details__user-rating-wrap">
         <div class="film-details__user-rating-controls">
@@ -54,33 +78,7 @@ const createRatingFilmTemplate = () => {
             <p class="film-details__user-rating-feelings">How you feel it?</p>
 
             <div class="film-details__user-rating-score">
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="1" id="rating-1">
-              <label class="film-details__user-rating-label" for="rating-1">1</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="2" id="rating-2">
-              <label class="film-details__user-rating-label" for="rating-2">2</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="3" id="rating-3">
-              <label class="film-details__user-rating-label" for="rating-3">3</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4">
-              <label class="film-details__user-rating-label" for="rating-4">4</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5">
-              <label class="film-details__user-rating-label" for="rating-5">5</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6">
-              <label class="film-details__user-rating-label" for="rating-6">6</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="7" id="rating-7">
-              <label class="film-details__user-rating-label" for="rating-7">7</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="8" id="rating-8">
-              <label class="film-details__user-rating-label" for="rating-8">8</label>
-
-              <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="9" id="rating-9" checked>
-              <label class="film-details__user-rating-label" for="rating-9">9</label>
-
+            ${createRatingFields(personalRating)}
             </div>
           </section>
         </div>
@@ -93,8 +91,8 @@ const createSmileTemplate = (emotion) => {
 };
 
 const createFilmPopupTemplate = (film, options) => {
-  const {title, rating, year, duration, genre, poster, description, comments, ageRating} = film;
-  const {watchlist, watched, favorite, emoji} = options;
+  const {title, alternativeTitle, totalRating, director, writers, actors, release, runtime, genre, poster, description, personalRating, comments, ageRating} = film;
+  const {watchlist, alreadyWatched, favorite, emoji} = options;
   return (`<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="form-details__top-container">
@@ -103,52 +101,53 @@ const createFilmPopupTemplate = (film, options) => {
         </div>
         <div class="film-details__info-wrap">
           <div class="film-details__poster">
-            <img class="film-details__poster-img" src="./images/posters/${poster}" alt="">
+            <img class="film-details__poster-img" src="${poster}" alt="">
 
-            <p class="film-details__age">${ageRating}</p>
+            <p class="film-details__age">${ageRating}+</p>
           </div>
 
           <div class="film-details__info">
             <div class="film-details__info-head">
               <div class="film-details__title-wrap">
                 <h3 class="film-details__title">${title}</h3>
-                <p class="film-details__title-original">Original: ${title}</p>
+                <p class="film-details__title-original">Original: ${alternativeTitle}</p>
               </div>
 
               <div class="film-details__rating">
-                <p class="film-details__total-rating">${rating}</p>
+                <p class="film-details__total-rating">${totalRating}</p>
+                ${(alreadyWatched) ? `<p class="film-details__user-rating">Your rate ${personalRating}</p>` : ``}
               </div>
             </div>
 
             <table class="film-details__table">
               <tr class="film-details__row">
                 <td class="film-details__term">Director</td>
-                <td class="film-details__cell">Anthony Mann</td>
+                <td class="film-details__cell">${director}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Writers</td>
-                <td class="film-details__cell">Anne Wigton, Heinz Herald, Richard Weil</td>
+                <td class="film-details__cell">${writers.join(`, `)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Actors</td>
-                <td class="film-details__cell">Erich von Stroheim, Mary Beth Hughes, Dan Duryea</td>
+                <td class="film-details__cell">${actors.join(`, `)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">30 March ${year}</td>
+                <td class="film-details__cell">${parseDate(release.date)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${duration}</td>
+                <td class="film-details__cell">${getDuration(runtime)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
-                <td class="film-details__cell">USA</td>
+                <td class="film-details__cell">${release.release_country}</td>
               </tr>
               <tr class="film-details__row">
-                <td class="film-details__term">Genres</td>
+                <td class="film-details__term">${(genre.length > 1) ? `Genres` : `Genre`}</td>
                 <td class="film-details__cell">
-                  <span class="film-details__genre">${genre}</span>
+                  <span class="film-details__genre">${genre.join(`, `)}</span>
               </tr>
             </table>
 
@@ -162,14 +161,14 @@ const createFilmPopupTemplate = (film, options) => {
           <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${watchlist ? `checked` : ``}>
           <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${watched ? `checked` : ``}>
+          <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${alreadyWatched ? `checked` : ``}>
           <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
           <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${favorite ? `checked` : ``}>
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
         </section>
       </div>
-      ${watched ? createRatingFilmTemplate() : ``}
+      ${alreadyWatched ? createRatingFilmTemplate(personalRating) : ``}
       <div class="form-details__bottom-container">
         <section class="film-details__comments-wrap">
           <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
@@ -214,20 +213,13 @@ const createFilmPopupTemplate = (film, options) => {
   </section>`);
 };
 
-const parseFormData = (formData) => {
-  return {
-    watched: Boolean(formData.get(`watched`)),
-    watchlist: Boolean(formData.get(`watchlist`)),
-    favorite: Boolean(formData.get(`favorite`))
-  };
-};
-
 export default class PopUp extends AbstractSmartComponent {
-  constructor(film) {
+  constructor(film, api) {
     super();
     this._film = film;
+    this._api = api;
 
-    this._isWatched = film.watched;
+    this._isWatched = film.alreadyWatched;
     this._isWatchlist = film.watchlist;
     this._isFavorite = film.favorite;
 
@@ -243,7 +235,7 @@ export default class PopUp extends AbstractSmartComponent {
   getTemplate() {
     return createFilmPopupTemplate(this._film, {
       watchlist: this._isWatchlist,
-      watched: this._isWatched,
+      alreadyWatched: this._isWatched,
       favorite: this._isFavorite,
       emoji: this._emoji,
     });
@@ -276,9 +268,7 @@ export default class PopUp extends AbstractSmartComponent {
 
   getData() {
     const form = this.getElement().querySelector(`.film-details__inner`);
-    const formData = new FormData(form);
-
-    return parseFormData(formData);
+    return new FormData(form);
   }
 
   _subscribeOnEvents() {
