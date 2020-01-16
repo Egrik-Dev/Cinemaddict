@@ -38,10 +38,11 @@ const parseFormData = (formData, film) => {
 };
 
 export default class MovieController {
-  constructor(container, onDataChange, onViewChange) {
+  constructor(container, onDataChange, onViewChange, api) {
     this._container = container;
     this._onDataChange = onDataChange;
     this._onViewChange = onViewChange;
+    this._api = api;
 
     this._mode = Mode.DEFAULT;
 
@@ -55,65 +56,45 @@ export default class MovieController {
 
   render(film) {
     this.film = film;
-
     const oldFilmComponent = this._filmComponent;
-
-    if (this._mode === Mode.DEFAULT) {
-      this._popupComponent = new PopUpComponent(film);
-
-      this._popupComponent.setDeleteCommentClickHandler((evt) => {
-        evt.preventDefault();
-        this.idComment = evt.target.parentNode.parentNode.parentNode.id;
-        this._onDataChange(this, film, null);
-        this._popupComponent.rerender();
-      });
-
-      this._popupComponent.setBtnCloseClickHandler(() => {
-        this._updateFilmCard();
-      });
-    }
-
     this._filmComponent = new FilmComponent(film);
 
     this._filmComponent.setPosterClickHandler(() => {
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
-      render(this._container, this._popupComponent, RenderPosition.AFTEREND);
+      this._createPopupComponent();
       this._toggleMovieToPopup();
     });
 
     this._filmComponent.setTitleClickHandler(() => {
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
-      render(this._container, this._popupComponent, RenderPosition.AFTEREND);
+      this._createPopupComponent();
       this._toggleMovieToPopup();
     });
 
     this._filmComponent.setCommentsClickHandler(() => {
       document.addEventListener(`keydown`, this._onEscKeyDown);
       document.addEventListener(`keydown`, this._onCtrlEnterKeyDown);
-      render(this._container, this._popupComponent, RenderPosition.AFTEREND);
+      this._createPopupComponent();
       this._toggleMovieToPopup();
     });
 
     this._filmComponent.setWatchlistClickHandler(() => {
       const newMovie = MovieModel.clone(film);
       newMovie.watchlist = !newMovie.watchlist;
-      // newMovie.comments = Array.from(newMovie.comments).map((comment) => String(comment.id));
       this._onDataChange(this, film, newMovie);
     });
 
     this._filmComponent.setAswatchedClickHandler(() => {
       const newMovie = MovieModel.clone(film);
       newMovie.alreadyWatched = !newMovie.alreadyWatched;
-      // newMovie.comments = Array.from(newMovie.comments).map((comment) => String(comment.id));
       this._onDataChange(this, film, newMovie);
     });
 
     this._filmComponent.setFavoriteClickHandler(() => {
       const newMovie = MovieModel.clone(film);
       newMovie.favorite = !newMovie.favorite;
-      // newMovie.comments = Array.from(newMovie.comments).map((comment) => String(comment.id));
       this._onDataChange(this, film, newMovie);
     });
 
@@ -135,7 +116,7 @@ export default class MovieController {
 
   destroy() {
     remove(this._filmComponent);
-    remove(this._popupComponent);
+    // remove(this._popupComponent);
     document.removeEventListener(`keydown`, this._onEscKeyDown);
     document.removeEventListener(`keydown`, this._onCtrlEnterKeyDown);
   }
@@ -179,5 +160,28 @@ export default class MovieController {
       this._popupComponent._currentComment = null;
       this._popupComponent.rerender();
     }
+  }
+
+  _createPopupComponent() {
+    this._api.getComments(this.film.id)
+    .then((comments) => {
+      this.film.comments = comments;
+      this._popupComponent = new PopUpComponent(this.film);
+      this._setPopupHandlers();
+      render(this._container, this._popupComponent, RenderPosition.AFTEREND);
+    });
+  }
+
+  _setPopupHandlers() {
+    this._popupComponent.setDeleteCommentClickHandler((evt) => {
+      evt.preventDefault();
+      this.idComment = evt.target.parentNode.parentNode.parentNode.id;
+      this._onDataChange(this, this.film, null);
+      this._popupComponent.rerender();
+    });
+
+    this._popupComponent.setBtnCloseClickHandler(() => {
+      this._updateFilmCard();
+    });
   }
 }

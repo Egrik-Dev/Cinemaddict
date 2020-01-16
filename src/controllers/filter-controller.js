@@ -1,5 +1,5 @@
 import {FilterType} from '../utils/const';
-import {getMoviesByFilter} from '../utils/filters';
+import {getMoviesByFilter} from '../utils/filters-sort';
 import FilterComponent from '../components/filter.js';
 import {render, replace, RenderPosition} from '../utils/render.js';
 

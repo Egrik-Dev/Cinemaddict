@@ -214,10 +214,9 @@ const createFilmPopupTemplate = (film, options) => {
 };
 
 export default class PopUp extends AbstractSmartComponent {
-  constructor(film, api) {
+  constructor(film) {
     super();
     this._film = film;
-    this._api = api;
 
     this._isWatched = film.alreadyWatched;
     this._isWatchlist = film.watchlist;
