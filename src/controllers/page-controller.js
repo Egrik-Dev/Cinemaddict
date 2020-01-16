@@ -11,14 +11,8 @@ const RENDER_EXTRA_FILMS_COUNT = 2;
 
 const renderFilms = (container, films, onDataChange, onViewChange, api) => {
   return films.map((film) => {
-    const movieControllerComponent = new MovieControllerComponent(container, onDataChange, onViewChange);
-
-    api.getComments(film.id)
-      .then((comments) => {
-        film.comments = comments;
-        movieControllerComponent.render(film);
-      });
-
+    const movieControllerComponent = new MovieControllerComponent(container, onDataChange, onViewChange, api);
+    movieControllerComponent.render(film);
     return movieControllerComponent;
   });
 };
@@ -38,11 +32,12 @@ export default class PageController {
 
     this._onDataChange = this._onDataChange.bind(this);
     this._onViewChange = this._onViewChange.bind(this);
-    this._onFilterChange = this._onFilterChange.bind(this);
+    this._onFilterSortChange = this._onFilterSortChange.bind(this);
 
     this._allMoviesListElement = null;
 
-    this._moviesModel.setFilterClickHandler(this._onFilterChange);
+    this._moviesModel.setFilterClickHandler(this._onFilterSortChange);
+    this._moviesModel.setSortClickHandler(this._onFilterSortChange);
 
     this._showedMovieControllers = [];
     this._showingMoviesCount = START_RENDER_FILMS_COUNT;
@@ -50,6 +45,7 @@ export default class PageController {
 
   render() {
     this._films = this._moviesModel.getFilmsAll();
+
     render(this._container.getElement(), this._filmListComponent, RenderPosition.BEFOREEND);
     this._allMoviesListElement = this._filmListComponent.getElement().querySelector(`.films-list__container`);
 
@@ -128,7 +124,7 @@ export default class PageController {
     this._showedMovieControllers.forEach((it) => it.setDefaultView());
   }
 
-  _onFilterChange() {
+  _onFilterSortChange() {
     this._removeFilms();
     this._renderMainFilms(this._moviesModel.getFilms().slice(0, START_RENDER_FILMS_COUNT));
     this._renderShowMore();

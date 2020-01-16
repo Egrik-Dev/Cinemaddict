@@ -1,9 +1,9 @@
 import API from './api.js';
 import AvatarComponent from './components/avatar.js';
-import SortComponent from './components/sort.js';
 import FilmsComponent from './components/films.js';
 import PageControllerComponent from './controllers/page-controller.js';
 import FilterController from './controllers/filter-controller.js';
+import SortController from './controllers/sort-controller';
 import MoviesModel from './models/movies';
 import {render, RenderPosition} from './utils/render.js';
 
@@ -20,15 +20,16 @@ const footerAllFilmsElement = document.querySelector(`.footer__statistics`).quer
 const filmsComponent = new FilmsComponent();
 const pageControllerComponent = new PageControllerComponent(filmsComponent, moviesModel, api);
 const filterController = new FilterController(mainMenuElement, moviesModel);
+const sortController = new SortController(mainMenuElement, moviesModel);
 
 filterController.render();
-render(mainMenuElement, new SortComponent(), RenderPosition.BEFOREEND);
+sortController.render();
 render(mainMenuElement, filmsComponent, RenderPosition.BEFOREEND);
 
 api.getFilms()
-   .then((films) => {
-     moviesModel.setFilms(films);
-     render(headerElement, new AvatarComponent(films), RenderPosition.BEFOREEND);
-     pageControllerComponent.render();
-     footerAllFilmsElement.replaceWith(`${films.length} movies inside`);
-   });
+  .then((films) => {
+    moviesModel.setFilms(films);
+    render(headerElement, new AvatarComponent(films), RenderPosition.BEFOREEND);
+    pageControllerComponent.render();
+    footerAllFilmsElement.replaceWith(`${films.length} movies inside`);
+  });

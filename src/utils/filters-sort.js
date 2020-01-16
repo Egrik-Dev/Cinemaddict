@@ -1,4 +1,4 @@
-import {FilterType} from '../utils/const';
+import {FilterType} from './const';
 
 export const getWatchlistFilms = (films) => {
   return films.filter((film) => film.watchlist);
@@ -20,6 +20,17 @@ export const getMoviesByFilter = (films, filterType) => {
       return getHistoryFilms(films);
     case FilterType.FAVORITES:
       return getFavoritesFilms(films);
+  }
+
+  return films;
+};
+
+export const getMoviesBySort = (films, sortType) => {
+  switch (sortType) {
+    case `Rating`:
+      return films.slice().sort((a, b) => b.totalRating - a.totalRating);
+    case `Date`:
+      return films.slice().sort((a, b) => Date.parse(b.release.date) - Date.parse(a.release.date));
   }
 
   return films;
