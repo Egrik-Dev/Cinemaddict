@@ -1,4 +1,11 @@
-import {FilterType} from './const';
+// import {FilterType} from './const';
+
+export const FilterType = {
+  ALL: `all`,
+  WATCHLIST: `watchlist`,
+  HISTORY: `history`,
+  FAVORITES: `favorites`,
+};
 
 export const getWatchlistFilms = (films) => {
   return films.filter((film) => film.watchlist);

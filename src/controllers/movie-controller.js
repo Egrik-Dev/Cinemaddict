@@ -2,7 +2,6 @@ import FilmComponent from '../components/film-card.js';
 import PopUpComponent from '../components/popup.js';
 import MovieModel from '../models/movie';
 import {render, remove, RenderPosition, replace} from '../utils/render.js';
-import {generateDateNow} from '../utils/const';
 
 const Mode = {
   DEFAULT: `default`,
@@ -127,7 +126,7 @@ export default class MovieController {
       author: `Some User`,
       emotion: this._popupComponent._emoji,
       comment: this._popupComponent._currentComment,
-      date: generateDateNow()
+      // date: generateDateNow()
     }));
   }
 

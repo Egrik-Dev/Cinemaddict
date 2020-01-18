@@ -1,30 +1,5 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
-import {Months, createSecondSign, getDuration} from '../utils/const';
-
-const MS_ONE_DAY = 86400000;
-
-const getCommentDate = (date) => {
-  const commentMs = Date.parse(date);
-  const now = Date.now();
-  const diff = now - commentMs;
-
-  if (diff < MS_ONE_DAY) {
-    return `Today`;
-  } else {
-    const days = Math.round(diff / MS_ONE_DAY);
-    return `${days} days ago`;
-  }
-};
-
-export const parseDate = (date) => {
-  const newDate = new Date(Date.parse(date));
-
-  const year = newDate.getFullYear();
-  const month = Months[newDate.getMonth()];
-  const day = createSecondSign(newDate.getDate());
-  return (`${day} ${month} ${year}`);
-};
-
+import {formatDuration, commentDate, formatReleaseDate} from '../utils/time.js';
 
 const createCommentTemplate = (comments) => {
   comments.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
@@ -38,7 +13,7 @@ const createCommentTemplate = (comments) => {
           <p class="film-details__comment-text">${comment.comment}</p>
           <p class="film-details__comment-info">
             <span class="film-details__comment-author">${comment.author}</span>
-            <span class="film-details__comment-day">${getCommentDate(comment.date)}</span>
+            <span class="film-details__comment-day">${commentDate(comment.date)}</span>
             <button class="film-details__comment-delete">Delete</button>
           </p>
         </div>
@@ -134,11 +109,11 @@ const createFilmPopupTemplate = (film, options) => {
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Release Date</td>
-                <td class="film-details__cell">${parseDate(release.date)}</td>
+                <td class="film-details__cell">${formatReleaseDate(release.date)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Runtime</td>
-                <td class="film-details__cell">${getDuration(runtime)}</td>
+                <td class="film-details__cell">${formatDuration(runtime)}</td>
               </tr>
               <tr class="film-details__row">
                 <td class="film-details__term">Country</td>
