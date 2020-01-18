@@ -58,7 +58,7 @@ export default class PageController {
 
       this._renderMainFilms(this._films.slice(0, this._showingMoviesCount));
 
-      const topRatedListFilms = this._films.slice().sort((a, b) => b.rating - a.rating).slice(0, RENDER_EXTRA_FILMS_COUNT);
+      const topRatedListFilms = this._films.slice().sort((a, b) => b.totalRating - a.totalRating).slice(0, RENDER_EXTRA_FILMS_COUNT);
       const topRatedListElement = this._filmListTopRated.getElement().querySelector(`.films-list__container`);
       renderFilms(topRatedListElement, topRatedListFilms.slice(0, RENDER_EXTRA_FILMS_COUNT), this._onDataChange, this._onViewChange, this._api);
 

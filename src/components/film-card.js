@@ -1,5 +1,5 @@
 import AbstractComponent from './abstract-component.js';
-import {getDuration} from '../utils/const';
+import {formatYear, formatDuration} from '../utils/time.js';
 
 const MAX_DESCRIPTION_SYMBOLS = 139;
 
@@ -11,8 +11,8 @@ const createMovieCardTemplate = (film) => {
       <h3 class="film-card__title">${title}</h3>
       <p class="film-card__rating">${totalRating}</p>
       <p class="film-card__info">
-        <span class="film-card__year">${release.date.substring(0, 4)}</span>
-        <span class="film-card__duration">${getDuration(runtime)}</span>
+        <span class="film-card__year">${formatYear(release.date)}</span>
+        <span class="film-card__duration">${formatDuration(runtime)}</span>
         <span class="film-card__genre">${genre.length > 0 ? genre[0] : ``}</span>
       </p>
       <img src="${poster}" alt="" class="film-card__poster">
