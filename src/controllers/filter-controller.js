@@ -30,13 +30,25 @@ export default class FilterController {
 
     const oldFilterComponent = this._filterComponent;
     this._filterComponent = new FilterComponent(filters);
-    this._filterComponent.setFilterClickHandler(this._onFilterChange); // Подписка на изменение View путём передачи колбэка во View
+    this._filterComponent.setFilterClickHandler(this._onFilterChange);
 
     return (oldFilterComponent) ? replace(this._filterComponent, oldFilterComponent) : render(container, this._filterComponent, RenderPosition.BEFOREEND);
   }
 
+  onSetChange(handler) {
+    this._container.addEventListener(`click`, (evt) => {
+      if (!evt.target.classList.contains(`main-navigation__item`)) {
+        return;
+      }
+
+      const menuType = evt.target.dataset.menutype;
+
+      handler(menuType);
+    });
+  }
+
   _onFilterChange(filterType, currentFilter) {
-    this._moviesModel.setFilter(filterType); // При изменении View запускается изменение model
+    this._moviesModel.setFilter(filterType);
     this._activeFilterType = filterType;
     this._changeActiveFilter(currentFilter);
   }

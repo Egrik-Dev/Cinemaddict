@@ -1,4 +1,7 @@
-// import {FilterType} from './const';
+export const MenuType = {
+  FILTER: `filter`,
+  STATS: `stats`
+};
 
 export const FilterType = {
   ALL: `all`,
@@ -41,4 +44,26 @@ export const getMoviesBySort = (films, sortType) => {
   }
 
   return films;
+};
+
+export const getMoviesByStatistic = (films, dateFrom) => {
+  const watchedFilms = films.slice().filter((film) => film.alreadyWatched);
+  return (dateFrom === `all-time`) ? watchedFilms : watchedFilms.filter((film) => film.watchingDate > dateFrom);
+};
+
+export const getGenresList = (films) => {
+  const START_COUNT_FILMS = 0;
+  const genres = {};
+  films.forEach((film) => {
+    film.genre.forEach((genre) => {
+      if (genre in genres) {
+        genres[genre]++;
+      } else {
+        genres[genre] = START_COUNT_FILMS;
+        genres[genre]++;
+      }
+    });
+  });
+
+  return Object.entries(genres).sort((a, b) => b[1] - a[1]);
 };

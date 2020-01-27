@@ -70,6 +70,14 @@ export default class PageController {
     }
   }
 
+  show() {
+    this._container.getElement().classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this._container.getElement().classList.add(`visually-hidden`);
+  }
+
   _renderShowMore() {
     remove(this._showMoreComponent);
 

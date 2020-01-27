@@ -19,6 +19,14 @@ export default class SortController {
     this._sortComponent.setSortClickHandler(this._onSortChange);
   }
 
+  show() {
+    this._sortComponent.getElement().classList.remove(`visually-hidden`);
+  }
+
+  hide() {
+    this._sortComponent.getElement().classList.add(`visually-hidden`);
+  }
+
   _onSortChange(sortType, currentSort) {
     this._moviesModel.setSort(sortType);
     this._activeSortType = sortType;
