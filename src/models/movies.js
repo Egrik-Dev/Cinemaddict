@@ -1,5 +1,5 @@
 import {FilterType} from '../utils/const';
-import {getMoviesByFilter, getMoviesBySort} from '../utils/filters-sort';
+import {getMoviesByFilter, getMoviesBySort, getMoviesByStatistic} from '../utils/filters-sort';
 
 export default class Movies {
   constructor() {
@@ -22,8 +22,16 @@ export default class Movies {
     return getMoviesBySort(filteredFilms, this._activeSortType);
   }
 
+  getStatisticFilms(dateFrom) {
+    return getMoviesByStatistic(this._films, dateFrom);
+  }
+
   getFilmsAll() {
     return this._films;
+  }
+
+  getWatchedFilms() {
+    return this._films.slice().filter((film) => film.alreadyWatched);
   }
 
   setFilms(films) {

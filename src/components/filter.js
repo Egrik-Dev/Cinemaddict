@@ -7,8 +7,14 @@ export const FilterTytle = {
   favorites: `Favorites`,
 };
 
+export const MenuType = {
+  FILTER: `filter`,
+  STATS: `stats`,
+};
+
 const createFilterMarkup = (filter, isChecked) => {
   return (`<a href="#${filter.name}"
+    data-menuType=${MenuType.FILTER}
     class="main-navigation__item
     ${isChecked ? `main-navigation__item--active` : ``}">
     ${FilterTytle[filter.name]}
@@ -21,7 +27,7 @@ const createFiltersTemplate = (filters) => {
 
   return (`<nav class="main-navigation">
     ${filtersMarkup}
-    <a href="#stats" class="main-navigation__item main-navigation__item--additional">Stats</a>
+    <a href="#stats" data-menuType=${MenuType.STATS} class="main-navigation__item main-navigation__item--additional">Stats</a>
   </nav>`);
 };
 
