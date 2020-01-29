@@ -97,7 +97,7 @@ const createFilterStatisticsTemplate = (statisticsTypes) => {
 };
 
 const createStatisticsTemplate = (films, activeStatisticsType, genres) => {
-  const topGenre = genres[0][0];
+  const topGenre = (genres.length > 0) ? genres[0][0] : `-`;
   const totalDuration = getTotalDuration(films);
   const totalHours = getTotalHours(totalDuration);
   const restMinutes = getRestOfMinutes(totalDuration);

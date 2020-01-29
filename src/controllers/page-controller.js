@@ -110,21 +110,33 @@ export default class PageController {
 
   _onDataChange(movieController, oldData, newData) {
     if (newData === null) {
-      this._moviesModel.deleteComment(movieController.idComment, oldData);
+      this._api.deleteComment(movieController.idComment)
+        .then(() => {
+          this._moviesModel.deleteComment(movieController.idComment, oldData);
+          movieController.popupComponent.rerender();
+        });
     } else if (oldData === null) {
-      this._moviesModel.addComment(movieController.film.id, newData);
+      this._api.createComment(movieController.film.id, newData)
+        .then((movie) => {
+          const comment = movie.comments[movie.comments.length - 1];
+          this._moviesModel.addComment(movieController.film.id, comment);
+          movieController.popupComponent.currentComment = null;
+          movieController.popupComponent.emoji = null;
+          movieController.popupComponent.rerender();
+        })
+        .catch(() => movieController.errorCommentForm());
     } else {
       this._api.updateFilm(oldData.id, newData)
         .then((movieModel) => {
-          const isSucsses = this._moviesModel.updateFilms(oldData.id, movieModel);
-          if (isSucsses) {
-            this._api.getComments(movieModel.id)
-            .then((comments) => {
-              movieModel.comments = comments;
-              movieController.render(movieModel);
+          this._moviesModel.updateFilms(oldData.id, movieModel);
+          movieController.render(movieModel);
+          if (movieController.popupComponent) {
+            movieController.ratingInputs.forEach((ratingInput) => {
+              ratingInput.removeAttribute(`disabled`);
             });
           }
-        });
+        })
+        .catch(() => movieController.errorRatingForm());
     }
   }
 
