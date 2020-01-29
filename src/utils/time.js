@@ -43,3 +43,5 @@ export const getDateFrom = (period) => {
       return period;
   }
 };
+
+export const parseToJson = (date) => moment(date).toJSON();

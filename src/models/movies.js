@@ -63,7 +63,7 @@ export default class Movies {
     return true;
   }
 
-  deleteComment(id, film) {
+  deleteComment(idComment, film) {
     const idFilm = film.id;
     const indexFilm = this._films.findIndex((movie) => movie.id === idFilm);
 
@@ -71,7 +71,7 @@ export default class Movies {
       return false;
     }
 
-    const indexComment = this._films[indexFilm].comments.findIndex((comment) => comment.id === Number(id));
+    const indexComment = this._films[indexFilm].comments.findIndex((comment) => comment.id === idComment);
     this._films[indexFilm].comments = [].concat(this._films[indexFilm].comments.slice(0, indexComment), this._films[indexFilm].comments.slice(indexComment + 1));
 
     return true;

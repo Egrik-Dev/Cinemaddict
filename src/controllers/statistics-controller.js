@@ -56,5 +56,6 @@ export default class StatisticsController {
 
   _onDataChange() {
     this.render();
+    this.hide();
   }
 }

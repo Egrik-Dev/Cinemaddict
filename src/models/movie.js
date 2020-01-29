@@ -1,3 +1,5 @@
+import {parseToJson} from '../utils/time';
+
 export default class Movie {
   constructor(movie) {
     this.id = movie[`id`];
@@ -20,7 +22,7 @@ export default class Movie {
     this.personalRating = movie.user_details[`personal_rating`];
     this.watchlist = movie.user_details[`watchlist`];
     this.alreadyWatched = movie.user_details[`already_watched`];
-    this.watchingDate = movie.user_details[`watching_date`];
+    this.watchingDate = movie.user_details[`watching_date`] || parseToJson(Date.now());
     this.favorite = movie.user_details[`favorite`];
 
     // Комменты
