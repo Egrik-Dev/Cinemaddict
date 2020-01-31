@@ -1,11 +1,17 @@
 import AbstractComponent from './abstract-component';
 
-const createNoFilmsTemplate = () => {
-  return (`<h2 class="films-list__title">There are no movies in our database</h2>`);
+const createNoFilmsTemplate = (isLoading) => {
+  return (`<h2 class="films-list__title">${(isLoading) ? `Loading...` : `There are no movies in our database`}</h2>`);
 };
 
 export default class NoFilms extends AbstractComponent {
+  constructor(isLoading) {
+    super();
+
+    this._isLoading = isLoading;
+  }
+
   getTemplate() {
-    return createNoFilmsTemplate();
+    return createNoFilmsTemplate(this._isLoading);
   }
 }

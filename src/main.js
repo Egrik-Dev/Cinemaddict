@@ -28,11 +28,14 @@ const statisticsController = new StatisticsController(mainMenuElement, moviesMod
 filterController.render();
 sortController.render();
 render(mainMenuElement, filmsComponent, RenderPosition.BEFOREEND);
+pageControllerComponent.enableLoadingStatus(true);
+pageControllerComponent.render();
 
 api.getFilms()
   .then((films) => {
     moviesModel.setFilms(films);
     render(headerElement, new AvatarComponent(films), RenderPosition.BEFOREEND);
+    pageControllerComponent.enableLoadingStatus(false);
     pageControllerComponent.render();
     statisticsController.render();
     statisticsController.hide();

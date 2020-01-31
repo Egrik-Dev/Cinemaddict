@@ -12,6 +12,11 @@ const Mode = {
 
 const SHAKE_ANIMATION_TIMEOUT = 600;
 
+const RatingColor = {
+  NORMAL: `#d8d8d8`,
+  ERROR: `ff0000`
+};
+
 const parseFormData = (formData, film) => {
   return new MovieModel({
     'id': film.id,
@@ -57,6 +62,7 @@ export default class MovieController {
 
     this._activeRating = null;
     this.ratingInputs = null;
+    this._btnDelete = null;
 
     this._onEscKeyDown = this._onEscKeyDown.bind(this);
     this._onCtrlEnterKeyDown = this._onCtrlEnterKeyDown.bind(this);
@@ -66,8 +72,6 @@ export default class MovieController {
     this.film = film;
     const oldFilmComponent = this._filmComponent;
     this._filmComponent = new FilmComponent(film);
-
-    // ОБРАБОТЧИКИ ДЛЯ ВХОДА В ПОПАП
 
     this._filmComponent.setPosterClickHandler(() => {
       document.addEventListener(`keydown`, this._onEscKeyDown);
@@ -89,8 +93,6 @@ export default class MovieController {
       this._createPopupComponent();
       this._toggleMovieToPopup();
     });
-
-    // ОБРАБОТЧИКИ ПОЛЬЗОВАТЕЛЬСКИХ КНОПОК
 
     this._filmComponent.setWatchlistClickHandler(() => {
       const newMovie = MovieModel.clone(film);
@@ -186,6 +188,9 @@ export default class MovieController {
     this.popupComponent.setDeleteCommentClickHandler((evt) => {
       evt.preventDefault();
       this.idComment = evt.target.parentNode.parentNode.parentNode.id;
+      this._btnDelete = evt.target;
+      this._btnDelete.textContent = `Deleting…`;
+      this._btnDelete.setAttribute(`disabled`, true);
       this._onDataChange(this, this.film, null);
     });
 
@@ -194,23 +199,19 @@ export default class MovieController {
     });
 
     this.popupComponent.setInputRatingClickHandler((evt) => {
-      // Убираем красную кнопку (если она была)
       if (this._activeRating) {
-        this._activeRating.style.backgroundColor = `#d8d8d8`;
+        this._activeRating.style.backgroundColor = RatingColor.NORMAL;
       }
-      // Находим все инпуты
       this.ratingInputs = this.popupComponent.getElement().querySelectorAll(`.film-details__user-rating-input`);
-      // Блокируем все инпуты
       this.ratingInputs.forEach((ratingInput) => {
         ratingInput.setAttribute(`disabled`, true);
       });
-      // Фиксируем балл который был выбран пользователем и фиксируем элемент (label)
       const currentRating = evt.target.value;
       this._activeRating = evt.target.nextElementSibling;
-      // Копируем модель и меняем в копии значение оценки
+      this.film.personalRating = Number(currentRating);
+
       const newMovie = MovieModel.clone(this.film);
       newMovie.personalRating = Number(currentRating);
-      // Передаём измененные данные наружу
       this._onDataChange(this, this.film, newMovie);
     });
   }
@@ -221,7 +222,7 @@ export default class MovieController {
     this.ratingInputs.forEach((ratingInput) => {
       ratingInput.removeAttribute(`disabled`);
     });
-    this._activeRating.style.backgroundColor = `red`;
+    this._activeRating.style.backgroundColor = RatingColor.ERROR;
 
     setTimeout(() => {
       ratingForm.style.animation = ``;
@@ -239,5 +240,10 @@ export default class MovieController {
       commentForm.style.animation = ``;
       commentArea.style.border = ``;
     }, SHAKE_ANIMATION_TIMEOUT);
+  }
+
+  errorDeleteComment() {
+    this._btnDelete.textContent = `Delete`;
+    this._btnDelete.removeAttribute(`disabled`);
   }
 }
