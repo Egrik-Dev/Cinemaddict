@@ -1,13 +1,19 @@
 import AbstractComponent from './abstract-component.js';
 
+const RankUser = {
+  NOVICE_FROM: 1,
+  NOVICE_TO: 10,
+  FAN_TO: 20
+};
+
 const countWatchedFilms = (films) => films.filter((film) => film.alreadyWatched);
 
 const userRank = (filmsCount) => {
   if (filmsCount === 0) {
     return ``;
-  } else if (filmsCount >= 1 && filmsCount <= 10) {
+  } else if (filmsCount >= RankUser.NOVICE_FROM && filmsCount <= RankUser.NOVICE_TO) {
     return `novice`;
-  } else if (filmsCount > 10 && filmsCount <= 20) {
+  } else if (filmsCount > RankUser.NOVICE_TO && filmsCount <= RankUser.FAN_TO) {
     return `fan`;
   } else {
     return `movie buff`;

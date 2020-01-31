@@ -15,8 +15,16 @@ const FilterStitisticsTytle = {
   'year': `Year`,
 };
 
-const getTotalDuration = (films) => {
-  return films.reduce((sum, current) => sum + current.runtime, 0);
+const UserRank = {
+  'Thriller': `Thrillerist`,
+  'Drama': `Dramaturg`,
+  'Sci-Fi': `Sci-Fighter`,
+  'Horror': `Boogy-Man`,
+  'Action': `Rambo`,
+  'Comedy': `Сomedian`,
+  'Family': `Family man`,
+  'Adventure': `Indiana Jones`,
+  'Animation': `Animator`
 };
 
 const ChartSettings = {
@@ -27,6 +35,10 @@ const ChartSettings = {
   LABEL_ALIGN: `start`,
   LABEL_OFFSET: 25,
   TICKS_PADDING: 60,
+};
+
+const getTotalDuration = (films) => {
+  return films.reduce((sum, current) => sum + current.runtime, 0);
 };
 
 const renderChart = (chartCtx, genres) => {
@@ -105,7 +117,7 @@ const createStatisticsTemplate = (films, activeStatisticsType, genres) => {
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    <span class="statistic__rank-label">Sci-Fighter</span>
+    <span class="statistic__rank-label">${UserRank[topGenre]}</span>
   </p>
   ${createFilterStatisticsTemplate(activeStatisticsType)}
   <ul class="statistic__text-list">

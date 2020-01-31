@@ -1,6 +1,8 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {formatDuration, commentDate, formatReleaseDate} from '../utils/time.js';
 
+const MAX_RATING = 9;
+
 const createCommentTemplate = (comments) => {
   comments.sort((a, b) => Date.parse(a.date) - Date.parse(b.date));
   return comments.map((comment) => {
@@ -24,8 +26,6 @@ const createCommentTemplate = (comments) => {
 };
 
 const createRatingFields = (personalRating) => {
-  const MAX_RATING = 9;
-
   const ratings = new Array(MAX_RATING).fill(``);
   return ratings.map((rating, index) => {
     return (`<input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="${index + 1}" id="rating-${index + 1}" ${(personalRating === index + 1) ? `checked` : ``}>
@@ -268,6 +268,15 @@ export default class PopUp extends AbstractSmartComponent {
 
         this.rerender();
       });
+
+    const btnUndoElement = element.querySelector(`.film-details__watched-reset`);
+    if (btnUndoElement) {
+      btnUndoElement.addEventListener(`click`, () => {
+        this._isWatched = !this._isWatched;
+
+        this.rerender();
+      });
+    }
 
     element.querySelector(`.film-details__control-label--watchlist`)
       .addEventListener(`click`, () => {

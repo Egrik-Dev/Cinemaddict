@@ -8,8 +8,13 @@ const Method = {
   DELETE: `DELETE`
 };
 
+const SERVER_STATUS = {
+  OK: 200,
+  NOT_OK: 300
+};
+
 const checkStatus = (response) => {
-  if (response.status >= 200 && response.status < 300) {
+  if (response.status >= SERVER_STATUS.OK && response.status < SERVER_STATUS.NOT_OK) {
     return response;
   } else {
     throw new Error(`${response.status}: ${response.statusText}`);
@@ -42,7 +47,6 @@ export default class API {
       headers: new Headers({'Content-Type': `application/json`})
     })
     .then((response) => response.json());
-    // .then(Comment.parseComment);
   }
 
   updateFilm(id, data) {

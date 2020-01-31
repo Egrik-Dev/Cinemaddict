@@ -10,6 +10,13 @@ export const FilterType = {
   FAVORITES: `favorites`,
 };
 
+const SortType = {
+  RATING: `Rating`,
+  DATE: `Date`
+};
+
+const ALL_TIME_FILMS = `all-time`;
+
 export const getWatchlistFilms = (films) => {
   return films.filter((film) => film.watchlist);
 };
@@ -37,9 +44,9 @@ export const getMoviesByFilter = (films, filterType) => {
 
 export const getMoviesBySort = (films, sortType) => {
   switch (sortType) {
-    case `Rating`:
+    case SortType.RATING:
       return films.slice().sort((a, b) => b.totalRating - a.totalRating);
-    case `Date`:
+    case SortType.DATE:
       return films.slice().sort((a, b) => Date.parse(b.release.date) - Date.parse(a.release.date));
   }
 
@@ -48,7 +55,7 @@ export const getMoviesBySort = (films, sortType) => {
 
 export const getMoviesByStatistic = (films, dateFrom) => {
   const watchedFilms = films.slice().filter((film) => film.alreadyWatched);
-  return (dateFrom === `all-time`) ? watchedFilms : watchedFilms.filter((film) => film.watchingDate > dateFrom);
+  return (dateFrom === ALL_TIME_FILMS) ? watchedFilms : watchedFilms.filter((film) => film.watchingDate > dateFrom);
 };
 
 export const getGenresList = (films) => {

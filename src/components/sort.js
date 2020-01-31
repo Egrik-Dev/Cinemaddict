@@ -1,5 +1,7 @@
 import AbstractComponent from './abstract-component.js';
 
+const DEFAULT_SORT_TYPE = `Default`;
+
 const createSortTemplate = () => {
   return (`<ul class="sort">
       <li><a href="#" class="sort__button sort__button--active" data-sort="Default">Sort by default</a></li>
@@ -15,7 +17,7 @@ export default class Sort extends AbstractComponent {
 
   setSortClickHandler(handler) {
     const sortType = this.getElement().querySelectorAll(`.sort__button`);
-    let activeSortType = `Default`;
+    let activeSortType = DEFAULT_SORT_TYPE;
     sortType.forEach((sort) => {
       sort.addEventListener(`click`, () => {
         const sortName = sort.dataset.sort;
