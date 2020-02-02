@@ -39,21 +39,21 @@ export default class API {
       .then(Comment.parseComments);
   }
 
-  createComment(id, data) {
+  createComment(id, comment) {
     return this._load({
       url: `comments/${id}`,
       method: Method.POST,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(comment.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
     .then((response) => response.json());
   }
 
-  updateFilm(id, data) {
+  updateFilm(id, movie) {
     return this._load({
       url: `movies/${id}`,
       method: Method.PUT,
-      body: JSON.stringify(data.toRAW()),
+      body: JSON.stringify(movie.toRAW()),
       headers: new Headers({'Content-Type': `application/json`})
     })
       .then((response) => response.json())

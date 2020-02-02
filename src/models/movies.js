@@ -1,5 +1,4 @@
-import {FilterType} from '../utils/const';
-import {getMoviesByFilter, getMoviesBySort, getMoviesByStatistic} from '../utils/filters-sort';
+import {getMoviesByFilter, getMoviesBySort, getMoviesByStatistic, FilterType} from '../utils/filters-sort';
 
 export default class Movies {
   constructor() {

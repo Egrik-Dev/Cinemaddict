@@ -8,7 +8,7 @@ const RankUser = {
 
 const countWatchedFilms = (films) => films.filter((film) => film.alreadyWatched);
 
-const userRank = (filmsCount) => {
+const getUserRank = (filmsCount) => {
   if (filmsCount === 0) {
     return ``;
   } else if (filmsCount >= RankUser.NOVICE_FROM && filmsCount <= RankUser.NOVICE_TO) {
@@ -22,7 +22,7 @@ const userRank = (filmsCount) => {
 
 const createAvatarTemplate = (films) => {
   const numWatchedFilms = countWatchedFilms(films);
-  const rank = userRank(numWatchedFilms.length);
+  const rank = getUserRank(numWatchedFilms.length);
   return (`<section class="header__profile profile">
       <p class="profile__rating">${rank}</p>
       <img class="profile__avatar" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">

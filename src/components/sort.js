@@ -16,17 +16,24 @@ export default class Sort extends AbstractComponent {
   }
 
   setSortClickHandler(handler) {
-    const sortType = this.getElement().querySelectorAll(`.sort__button`);
+    const sortTypeElement = this.getElement().querySelectorAll(`.sort__button`);
     let activeSortType = DEFAULT_SORT_TYPE;
-    sortType.forEach((sort) => {
+    sortTypeElement.forEach((sort) => {
       sort.addEventListener(`click`, () => {
         const sortName = sort.dataset.sort;
 
         if (activeSortType !== sortName) {
           activeSortType = sortName;
-          handler(sortName, sort);
+          this._changeActiveSort(sort);
+          handler(sortName);
         }
       });
     });
+  }
+
+  _changeActiveSort(newActiveSort) {
+    const oldActiveSortElement = this.getElement().querySelector(`.sort__button--active`);
+    oldActiveSortElement.classList.remove(`sort__button--active`);
+    newActiveSort.classList.add(`sort__button--active`);
   }
 }
