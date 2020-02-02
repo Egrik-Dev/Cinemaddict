@@ -103,9 +103,9 @@ export default class PageController {
     }
   }
 
-  _removeFilms(arrayControllers) {
-    arrayControllers.forEach((movieController) => movieController.destroy());
-    arrayControllers = [];
+  _removeFilms() {
+    this._showedMovieControllers.forEach((movieController) => movieController.destroy());
+    this._showedMovieControllers = [];
   }
 
   _renderMainFilms(films) {
