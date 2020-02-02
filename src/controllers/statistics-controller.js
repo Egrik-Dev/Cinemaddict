@@ -10,11 +10,11 @@ export default class StatisticsController {
     this._moviesModel = moviesModel;
 
     this._statisticsComponent = null;
-    this._onStatisticsTypeChange = this._onStatisticsTypeChange.bind(this);
-    this._onDataChange = this._onDataChange.bind(this);
+    this._setStatisticsTypeChangeHandler = this._setStatisticsTypeChangeHandler.bind(this);
+    this._setDataChangeHandler = this._setDataChangeHandler.bind(this);
 
     this._activeStatisticsType = StatisticsType.ALL;
-    this._moviesModel.setDataChangeHandler(this._onDataChange);
+    this._moviesModel.setDataChangeHandler(this._setDataChangeHandler);
   }
 
   render() {
@@ -31,7 +31,7 @@ export default class StatisticsController {
 
     this._statisticsComponent = new StatisticsComponent(films, statisticsTypes, genres);
 
-    this._statisticsComponent.setStatisticClickHandler(this._onStatisticsTypeChange);
+    this._statisticsComponent.setStatisticClickHandler(this._setStatisticsTypeChangeHandler);
     if (oldStatisticsComponent) {
       replace(this._statisticsComponent, oldStatisticsComponent);
       this._statisticsComponent.createChart();
@@ -49,12 +49,12 @@ export default class StatisticsController {
     this._statisticsComponent.getElement().classList.add(`visually-hidden`);
   }
 
-  _onStatisticsTypeChange(statisticsType) {
+  _setStatisticsTypeChangeHandler(statisticsType) {
     this._activeStatisticsType = statisticsType;
     this.render();
   }
 
-  _onDataChange() {
+  _setDataChangeHandler() {
     this.render();
     this.hide();
   }

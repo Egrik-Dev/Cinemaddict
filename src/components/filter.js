@@ -1,12 +1,5 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 
-export const FilterTytle = {
-  all: `All movies`,
-  watchlist: `Watchlist`,
-  history: `History`,
-  favorites: `Favorites`,
-};
-
 export const MenuType = {
   FILTER: `filter`,
   STATS: `stats`,
@@ -17,8 +10,8 @@ const createFilterMarkup = (filter, isChecked) => {
     data-menuType=${MenuType.FILTER}
     class="main-navigation__item
     ${isChecked ? `main-navigation__item--active` : ``}">
-    ${FilterTytle[filter.name]}
-    ${(filter.name !== `all`) ? `<span class="main-navigation__item-count">${filter.count}</span>` : ``}
+    ${filter.name}
+    ${(filter.name !== `All movies`) ? `<span class="main-navigation__item-count">${filter.count}</span>` : ``}
   </a>`);
 };
 
@@ -43,12 +36,19 @@ export default class Filter extends AbstractSmartComponent {
   }
 
   setFilterClickHandler(handler) {
-    const filtersTitle = this.getElement().querySelectorAll(`.main-navigation__item`);
-    filtersTitle.forEach((filter) => {
+    const filtersTitleElement = this.getElement().querySelectorAll(`.main-navigation__item`);
+    filtersTitleElement.forEach((filter) => {
       filter.addEventListener(`click`, () => {
         const filterName = filter.getAttribute(`href`);
-        handler(filterName.substring(1), filter);
+        this._changeActiveFilter(filter);
+        handler(filterName.substring(1));
       });
     });
+  }
+
+  _changeActiveFilter(newActiveFilter) {
+    const oldActiveFilterElement = this.getElement().querySelector(`.main-navigation__item--active`);
+    oldActiveFilterElement.classList.remove(`main-navigation__item--active`);
+    newActiveFilter.classList.add(`main-navigation__item--active`);
   }
 }

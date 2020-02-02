@@ -1,5 +1,4 @@
-import {FilterType} from '../utils/const';
-import {getMoviesByFilter} from '../utils/filters-sort';
+import {getMoviesByFilter, FilterType} from '../utils/filters-sort';
 import FilterComponent from '../components/filter.js';
 import {render, replace, RenderPosition} from '../utils/render.js';
 
@@ -11,10 +10,10 @@ export default class FilterController {
     this._activeFilterType = FilterType.ALL;
     this._filterComponent = null;
 
-    this._onFilterChange = this._onFilterChange.bind(this);
-    this._onDataChange = this._onDataChange.bind(this);
+    this._setFilterChangeHandler = this._setFilterChangeHandler.bind(this);
+    this._setDataChangeHandler = this._setDataChangeHandler.bind(this);
 
-    this._moviesModel.setDataChangeHandler(this._onDataChange);
+    this._moviesModel.setDataChangeHandler(this._setDataChangeHandler);
   }
 
   render() {
@@ -30,12 +29,12 @@ export default class FilterController {
 
     const oldFilterComponent = this._filterComponent;
     this._filterComponent = new FilterComponent(filters);
-    this._filterComponent.setFilterClickHandler(this._onFilterChange);
+    this._filterComponent.setFilterClickHandler(this._setFilterChangeHandler);
 
     return (oldFilterComponent) ? replace(this._filterComponent, oldFilterComponent) : render(container, this._filterComponent, RenderPosition.BEFOREEND);
   }
 
-  onSetChange(handler) {
+  setMenuTypeClickHandler(handler) {
     this._container.addEventListener(`click`, (evt) => {
       if (!evt.target.classList.contains(`main-navigation__item`)) {
         return;
@@ -47,19 +46,12 @@ export default class FilterController {
     });
   }
 
-  _onFilterChange(filterType, currentFilter) {
+  _setFilterChangeHandler(filterType) {
     this._moviesModel.setFilter(filterType);
     this._activeFilterType = filterType;
-    this._changeActiveFilter(currentFilter);
   }
 
-  _changeActiveFilter(newActiveFilter) {
-    const oldActiveFilter = this._filterComponent.getElement().querySelector(`.main-navigation__item--active`);
-    oldActiveFilter.classList.remove(`main-navigation__item--active`);
-    newActiveFilter.classList.add(`main-navigation__item--active`);
-  }
-
-  _onDataChange() {
+  _setDataChangeHandler() {
     this.render();
   }
 }

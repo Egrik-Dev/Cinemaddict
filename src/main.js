@@ -42,7 +42,7 @@ api.getFilms()
     footerAllFilmsElement.replaceWith(`${films.length} movies inside`);
   });
 
-filterController.onSetChange((menuType) => {
+filterController.setMenuTypeClickHandler((menuType) => {
   switch (menuType) {
     case MenuType.FILTER:
       pageControllerComponent.show();

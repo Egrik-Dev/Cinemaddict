@@ -9,9 +9,9 @@ const START_RENDER_FILMS_COUNT = 5;
 const LOAD_MORE_RENDER_FILMS_COUNT = 5;
 const RENDER_EXTRA_FILMS_COUNT = 2;
 
-const renderFilms = (container, films, onDataChange, onViewChange, api) => {
+const renderFilms = (FilmComponentContainer, PopupComponentConatainer, films, onDataChange, onViewChange, api) => {
   return films.map((film) => {
-    const movieControllerComponent = new MovieControllerComponent(container, onDataChange, onViewChange, api);
+    const movieControllerComponent = new MovieControllerComponent(FilmComponentContainer, PopupComponentConatainer, onDataChange, onViewChange, api);
     movieControllerComponent.render(film);
     return movieControllerComponent;
   });
@@ -31,23 +31,21 @@ export default class PageController {
     this._showMoreComponent = new ShowMoreComponent();
     this._noFilmsComponent = null;
 
-    this._onDataChange = this._onDataChange.bind(this);
-    this._onViewChange = this._onViewChange.bind(this);
-    this._onFilterSortChange = this._onFilterSortChange.bind(this);
+    this._setDataChangeHandler = this._setDataChangeHandler.bind(this);
+    this._setViewChangeHandler = this._setViewChangeHandler.bind(this);
+    this._setFilterSortChangeHandler = this._setFilterSortChangeHandler.bind(this);
 
     this._allMoviesListElement = null;
     this._isLoading = false;
 
-    this._moviesModel.setFilterClickHandler(this._onFilterSortChange);
-    this._moviesModel.setSortClickHandler(this._onFilterSortChange);
+    this._moviesModel.setFilterClickHandler(this._setFilterSortChangeHandler);
+    this._moviesModel.setSortClickHandler(this._setFilterSortChangeHandler);
 
     this._showedMovieControllers = [];
-    this._showedRatingMovieControllers = null;
-    this._showedMostCommentedMovieControllers = null;
+    this._showedExtraMovieControllers = [];
     this._showingMoviesCount = START_RENDER_FILMS_COUNT;
 
-    this._topRatedListFilms = null;
-    this._mostCommentedListFilms = null;
+    this._extraListFilms = [];
   }
 
   render() {
@@ -69,8 +67,7 @@ export default class PageController {
 
       this._renderMainFilms(this._films.slice(0, this._showingMoviesCount));
 
-      this._renderTopRatedFilms();
-      this._renderMostCommentedFilms();
+      this._renderExtraFilms();
       this._renderShowMore();
     }
   }
@@ -106,55 +103,44 @@ export default class PageController {
     }
   }
 
-  _removeFilms() {
-    this._showedMovieControllers.forEach((movieController) => movieController.destroy());
-    this._showedMovieControllers = [];
+  _removeFilms(arrayControllers) {
+    arrayControllers.forEach((movieController) => movieController.destroy());
+    arrayControllers = [];
   }
 
   _renderMainFilms(films) {
-    const newFilms = renderFilms(this._allMoviesListElement, films, this._onDataChange, this._onViewChange, this._api);
+    const newFilms = renderFilms(this._allMoviesListElement, this._container.getElement(), films, this._setDataChangeHandler, this._setViewChangeHandler, this._api);
     this._showedMovieControllers = this._showedMovieControllers.concat(newFilms);
     this._showingMoviesCount = this._showedMovieControllers.length;
   }
 
-  _renderTopRatedFilms() {
+  _renderExtraFilms() {
     const newTopRatedListFilms = this._moviesModel.getFilmsAll().slice().sort((a, b) => b.totalRating - a.totalRating).slice(0, RENDER_EXTRA_FILMS_COUNT);
-    if (JSON.stringify(this._topRatedListFilms) !== JSON.stringify(newTopRatedListFilms)) {
-      this._topRatedListFilms = newTopRatedListFilms;
-      const topRatedListElement = this._filmListTopRated.getElement().querySelector(`.films-list__container`);
-
-      if (this._showedRatingMovieControllers !== null) {
-        this._showedRatingMovieControllers.map((film) => film.destroy());
-      }
-
-      const newFilms = renderFilms(topRatedListElement, this._topRatedListFilms.slice(0, RENDER_EXTRA_FILMS_COUNT), this._onDataChange, this._onViewChange, this._api);
-      this._showedRatingMovieControllers = newFilms;
-    }
-  }
-
-  _renderMostCommentedFilms() {
     const newMostCommentedListFilms = this._moviesModel.getFilmsAll().slice().sort((a, b) => b.comments.length - a.comments.length).slice(0, RENDER_EXTRA_FILMS_COUNT);
-    if (JSON.stringify(this._mostCommentedListFilms) !== JSON.stringify(newMostCommentedListFilms)) {
-      this._mostCommentedListFilms = newMostCommentedListFilms;
-      const mostCommentedListElement = this._filmListMostCommented.getElement().querySelector(`.films-list__container`);
 
-      if (this._showedMostCommentedMovieControllers !== null) {
-        this._showedMostCommentedMovieControllers.map((film) => film.destroy());
-      }
+    const newExtraListFilms = newTopRatedListFilms.concat(newMostCommentedListFilms);
+    const topRatedListElement = this._filmListTopRated.getElement().querySelector(`.films-list__container`);
+    const mostCommentedListElement = this._filmListMostCommented.getElement().querySelector(`.films-list__container`);
 
-      const newFilms = renderFilms(mostCommentedListElement, this._mostCommentedListFilms.slice(0, RENDER_EXTRA_FILMS_COUNT), this._onDataChange, this._onViewChange, this._api);
-      this._showedMostCommentedMovieControllers = newFilms;
+    if (JSON.stringify(this._extraListFilms) !== JSON.stringify(newExtraListFilms)) {
+      this._extraListFilms = newExtraListFilms;
+      this._showedExtraMovieControllers.map((film) => film.destroy());
+
+      const newTopRatedMovieControllers = renderFilms(topRatedListElement, this._container.getElement(), newTopRatedListFilms, this._setDataChangeHandler, this._setViewChangeHandler, this._api);
+      const newMostCommentedMovieControllers = renderFilms(mostCommentedListElement, this._container.getElement(), newMostCommentedListFilms, this._setDataChangeHandler, this._setViewChangeHandler, this._api);
+
+      this._showedExtraMovieControllers = newTopRatedMovieControllers.concat(newMostCommentedMovieControllers);
     }
   }
 
-  _onDataChange(movieController, oldData, newData) {
+  _setDataChangeHandler(movieController, oldData, newData) {
     if (newData === null) {
       this._api.deleteComment(movieController.idComment)
         .then(() => {
           this._moviesModel.deleteComment(movieController.idComment, oldData);
           movieController.popupComponent.rerender();
         })
-        .catch(() => movieController.errorDeleteComment());
+        .catch(() => movieController.popupComponent.errorDeleteComment());
     } else if (oldData === null) {
       this._api.createComment(movieController.film.id, newData)
         .then((movie) => {
@@ -162,33 +148,32 @@ export default class PageController {
           this._moviesModel.addComment(movieController.film.id, comment);
           movieController.popupComponent.currentComment = null;
           movieController.popupComponent.emoji = null;
+          movieController.pauseSendComment = false;
           movieController.popupComponent.rerender();
         })
-        .catch(() => movieController.errorCommentForm());
+        .catch(() => movieController.errorSendComment());
     } else {
       this._api.updateFilm(oldData.id, newData)
         .then((movieModel) => {
           if (movieController.popupComponent) {
-            movieController.ratingInputs.forEach((ratingInput) => {
-              ratingInput.removeAttribute(`disabled`);
-            });
+            movieController.popupComponent.enableInputsRating();
             movieController.film.personalRating = newData.personalRating;
           } else {
             this._moviesModel.updateFilms(oldData.id, movieModel);
             movieController.render(movieModel);
-            this._renderTopRatedFilms();
-            this._renderMostCommentedFilms();
+            this._renderExtraFilms();
           }
         })
-        .catch(() => movieController.errorRatingForm());
+        .catch(() => movieController.popupComponent.errorRatingForm());
     }
   }
 
-  _onViewChange() {
+  _setViewChangeHandler() {
     this._showedMovieControllers.forEach((it) => it.setDefaultView());
+    this._showedExtraMovieControllers.forEach((it) => it.setDefaultView());
   }
 
-  _onFilterSortChange() {
+  _setFilterSortChangeHandler() {
     this._removeFilms();
     this._renderMainFilms(this._moviesModel.getFilms().slice(0, START_RENDER_FILMS_COUNT));
     this._renderShowMore();

@@ -4,16 +4,18 @@ export const MenuType = {
 };
 
 export const FilterType = {
-  ALL: `all`,
-  WATCHLIST: `watchlist`,
-  HISTORY: `history`,
-  FAVORITES: `favorites`,
+  ALL: `All movies`,
+  WATCHLIST: `Watchlist`,
+  HISTORY: `History`,
+  FAVORITES: `Favorites`,
 };
 
 const SortType = {
   RATING: `Rating`,
   DATE: `Date`
 };
+
+const START_COUNT_FILMS = 1;
 
 const ALL_TIME_FILMS = `all-time`;
 
@@ -59,7 +61,6 @@ export const getMoviesByStatistic = (films, dateFrom) => {
 };
 
 export const getGenresList = (films) => {
-  const START_COUNT_FILMS = 0;
   const genres = {};
   films.forEach((film) => {
     film.genre.forEach((genre) => {
@@ -67,7 +68,6 @@ export const getGenresList = (films) => {
         genres[genre]++;
       } else {
         genres[genre] = START_COUNT_FILMS;
-        genres[genre]++;
       }
     });
   });

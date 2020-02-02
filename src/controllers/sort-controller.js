@@ -9,14 +9,14 @@ export default class SortController {
     this._activeSortType = null;
     this._sortComponent = null;
 
-    this._onSortChange = this._onSortChange.bind(this);
+    this._setSortChangeHandler = this._setSortChangeHandler.bind(this);
   }
 
   render() {
     this._sortComponent = new SortComponent();
     render(this._container, this._sortComponent, RenderPosition.BEFOREEND);
 
-    this._sortComponent.setSortClickHandler(this._onSortChange);
+    this._sortComponent.setSortClickHandler(this._setSortChangeHandler);
   }
 
   show() {
@@ -27,15 +27,8 @@ export default class SortController {
     this._sortComponent.getElement().classList.add(`visually-hidden`);
   }
 
-  _onSortChange(sortType, currentSort) {
+  _setSortChangeHandler(sortType) {
     this._moviesModel.setSort(sortType);
     this._activeSortType = sortType;
-    this._changeActiveSort(currentSort);
-  }
-
-  _changeActiveSort(newActiveSort) {
-    const oldActiveSort = this._sortComponent.getElement().querySelector(`.sort__button--active`);
-    oldActiveSort.classList.remove(`sort__button--active`);
-    newActiveSort.classList.add(`sort__button--active`);
   }
 }
