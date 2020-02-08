@@ -1,4 +1,6 @@
-import API from './api.js';
+import Api from './api/index.js';
+import Provider from './api/provider.js';
+import Store from './api/store.js';
 import AvatarComponent from './components/avatar.js';
 import FilmsComponent from './components/films.js';
 import PageControllerComponent from './controllers/page-controller.js';
@@ -9,10 +11,25 @@ import MoviesModel from './models/movies';
 import {render, RenderPosition} from './utils/render.js';
 import {MenuType} from './utils/filters-sort.js';
 
+const STORE_PREFIX = `cinemaAddict-localstorage`;
+const STORE_VER = `v1`;
+const CACHE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 const AUTHORIZATION = `Basic eo0w590ik29889a`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/cinemaddict`;
 
-const api = new API(END_POINT, AUTHORIZATION);
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+    .then(() => {
+      console.log(`SW Работает!`);
+    })
+    .catch(() => {
+      console.log(`SW не работает!`);
+    });
+});
+
+const api = new Api(END_POINT, AUTHORIZATION);
+const store = new Store(CACHE_NAME, window.localStorage);
+const apiWithProvider = new Provider(api, store);
 const moviesModel = new MoviesModel();
 
 const headerElement = document.querySelector(`.header`);
@@ -20,7 +37,7 @@ const mainMenuElement = document.querySelector(`.main`);
 const footerAllFilmsElement = document.querySelector(`.footer__statistics`).querySelector(`p`);
 
 const filmsComponent = new FilmsComponent();
-const pageControllerComponent = new PageControllerComponent(filmsComponent, moviesModel, api);
+const pageControllerComponent = new PageControllerComponent(filmsComponent, moviesModel, apiWithProvider);
 const filterController = new FilterController(mainMenuElement, moviesModel);
 const sortController = new SortController(mainMenuElement, moviesModel);
 const statisticsController = new StatisticsController(mainMenuElement, moviesModel);
@@ -31,7 +48,7 @@ render(mainMenuElement, filmsComponent, RenderPosition.BEFOREEND);
 pageControllerComponent.enableLoadingStatus(true);
 pageControllerComponent.render();
 
-api.getFilms()
+apiWithProvider.getFilms()
   .then((films) => {
     moviesModel.setFilms(films);
     render(headerElement, new AvatarComponent(films), RenderPosition.BEFOREEND);

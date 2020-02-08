@@ -143,8 +143,7 @@ export default class PageController {
         .catch(() => movieController.popupComponent.errorDeleteComment());
     } else if (oldData === null) {
       this._api.createComment(movieController.film.id, newData)
-        .then((movie) => {
-          const comment = movie.comments[movie.comments.length - 1];
+        .then((comment) => {
           this._moviesModel.addComment(movieController.film.id, comment);
           movieController.popupComponent.currentComment = null;
           movieController.popupComponent.emoji = null;
