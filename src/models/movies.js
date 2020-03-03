@@ -72,7 +72,6 @@ export default class Movies {
 
     const indexComment = this._films[indexFilm].comments.findIndex((comment) => comment.id === idComment);
     this._films[indexFilm].comments = [].concat(this._films[indexFilm].comments.slice(0, indexComment), this._films[indexFilm].comments.slice(indexComment + 1));
-
     return true;
   }
 

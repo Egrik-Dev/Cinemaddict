@@ -1,5 +1,5 @@
 const CACHE_PREFIX = `cinemaAddict-cache`;
-const CACHE_VER = `v1`;
+const CACHE_VER = `v5`;
 const CACHE_NAME = `${CACHE_PREFIX}-${CACHE_VER}`;
 
 self.addEventListener(`install`, (evt) => {
@@ -24,6 +24,7 @@ self.addEventListener(`install`, (evt) => {
             `/images/icons/icon-watchlist-active.svg`,
             `/images/icons/icon-watchlist.svg`,
             `/images/posters/made-for-each-other.png`,
+            `/images/posters/popeye-meets-sinbad.png`,
             `/images/background.png`,
             `/images/bitmap.png`,
             `/images/bitmap@2x.png`,
@@ -81,5 +82,4 @@ const fetchHandler = (evt) => {
   );
 };
 
-self.addEventListener(`fetch`, (evt) => {
-});
+self.addEventListener(`fetch`, fetchHandler);

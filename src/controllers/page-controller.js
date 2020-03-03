@@ -135,7 +135,7 @@ export default class PageController {
 
   _setDataChangeHandler(movieController, oldData, newData) {
     if (newData === null) {
-      this._api.deleteComment(movieController.idComment)
+      this._api.deleteComment(movieController.idComment, oldData.id)
         .then(() => {
           this._moviesModel.deleteComment(movieController.idComment, oldData);
           movieController.popupComponent.rerender();

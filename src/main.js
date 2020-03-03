@@ -17,15 +17,14 @@ const CACHE_NAME = `${STORE_PREFIX}-${STORE_VER}`;
 const AUTHORIZATION = `Basic eo0w590ik29889a`;
 const END_POINT = `https://htmlacademy-es-10.appspot.com/cinemaddict`;
 
-// window.addEventListener(`load`, () => {
-//   navigator.serviceWorker.register(`/sw.js`)
-//     .then(() => {
-//       console.log(`SW Работает!`);
-//     })
-//     .catch(() => {
-//       console.log(`SW не работает!`);
-//     });
-// });
+window.addEventListener(`load`, () => {
+  navigator.serviceWorker.register(`/sw.js`)
+  .then(() => {
+    document.title += `[SW]`;
+  }).catch(() => {
+    document.title += `[NO SW]`;
+  });
+});
 
 const api = new Api(END_POINT, AUTHORIZATION);
 const store = new Store(CACHE_NAME, window.localStorage);
@@ -72,4 +71,16 @@ filterController.setMenuTypeClickHandler((menuType) => {
       statisticsController.show();
       break;
   }
+});
+
+window.addEventListener(`online`, () => {
+  document.title = document.title.replace(` [offline]`, ``);
+
+  if (!apiWithProvider.getSynchronize()) {
+    apiWithProvider.sync();
+  }
+});
+
+window.addEventListener(`offline`, () => {
+  document.title += ` [offline]`;
 });

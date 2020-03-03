@@ -12,15 +12,30 @@ export default class Store {
     }
   }
 
-  dropAll() {}
-
   setItem(key, value) {
     const store = this.getAll();
+
+    if (store !== null && store[key]) {
+      const comments = store[key][`comments`];
+      value.comments = comments;
+    }
 
     this._storage.setItem(
         this._storeKey,
         JSON.stringify(
             Object.assign({}, store, {[key]: value})
+        )
+    );
+  }
+
+  setComments(key, value) {
+    const store = this.getAll();
+    store[key][`comments`] = value;
+
+    this._storage.setItem(
+        this._storeKey,
+        JSON.stringify(
+            Object.assign({}, store)
         )
     );
   }
@@ -37,10 +52,11 @@ export default class Store {
     );
   }
 
-  removeItem(key) {
+  removeComment(key, value) {
     const store = this.getAll();
 
-    delete store[key];
+    const indexComment = store[key][`comments`].findIndex((comment) => comment.id === value);
+    store[key][`comments`][indexComment][`state`] = `deleted`;
 
     this._storage.setItem(
         this._storeKey,
@@ -48,5 +64,10 @@ export default class Store {
             Object.assign({}, store)
         )
     );
+  }
+
+  getComments(key) {
+    const store = this.getAll();
+    return store[key][`comments`];
   }
 }
