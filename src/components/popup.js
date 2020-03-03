@@ -1,5 +1,6 @@
 import AbstractSmartComponent from './abstract-smart-component.js';
 import {formatDuration, commentDate, formatReleaseDate} from '../utils/time.js';
+import {filterComments} from '../utils/const.js';
 import he from 'he';
 
 const MAX_RATING = 9;
@@ -73,8 +74,11 @@ const createSmileTemplate = (emotion) => {
 };
 
 const createFilmPopupTemplate = (film, options) => {
-  const {title, alternativeTitle, totalRating, director, writers, actors, release, runtime, genre, poster, description, personalRating, comments, ageRating} = film;
+  const {title, alternativeTitle, totalRating, director, writers, actors, release, runtime, genre, poster, description, personalRating, ageRating, comments} = film;
   const {watchlist, alreadyWatched, favorite, emoji, textComment} = options;
+
+  const filteredComments = filterComments(comments);
+
   return (`<section class="film-details">
     <form class="film-details__inner" action="" method="get">
       <div class="form-details__top-container">
@@ -153,10 +157,10 @@ const createFilmPopupTemplate = (film, options) => {
       ${alreadyWatched ? createRatingFilmTemplate(personalRating, poster, title) : ``}
       <div class="form-details__bottom-container">
         <section class="film-details__comments-wrap">
-          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
+          <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${filteredComments.length}</span></h3>
 
           <ul class="film-details__comments-list">
-            ${createCommentTemplate(comments)}
+            ${createCommentTemplate(filteredComments)}
           </ul>
 
           <div class="film-details__new-comment">

@@ -36,7 +36,7 @@ const parseFormData = (formData, film) => {
       'watching_date': film.watchingDate,
       'favorite': Boolean(formData.get(`favorite`)),
     },
-    'comments': []
+    'comments': film.comments.map((comment) => comment.id)
   });
 };
 
@@ -211,6 +211,7 @@ export default class MovieController {
 
       const newMovie = MovieModel.clone(this.film);
       newMovie.personalRating = Number(currentRating);
+      newMovie.comments = newMovie.comments.map((comment) => comment.id);
       this._onDataChange(this, this.film, newMovie);
     });
   }
