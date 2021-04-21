@@ -1,6 +1,6 @@
 # Добро пожаловать в Cinemaddict 🎉
 
-<!-- Ссылка на проект - https://egrik-dev.github.io/ -->
+Ссылка на проект - https://egrik-dev.github.io/Cinemaddict/
 
 ![screenshot](./public/images/screenshot.png)
 
